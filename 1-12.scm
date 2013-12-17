@@ -1,0 +1,5 @@
+(define (pascaltri row col) 
+  (cond ((= col 1) 1)
+        ((= col row) 1)
+	(else (+ ( pascaltri(- row 1)(- col 1))
+	         ( pascaltri(- row 1) col)))))
