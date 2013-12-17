@@ -1,9 +1,10 @@
-;; SICP EX 1.3
-  
-
+(define (new-if pred then-c else-c)
+  (cond (pred then-c)
+  (else else-c)))
+ 
 (define 
   (largest-2-square-and-sum x y z)
-    (if (= x (larger x y))
+    (new-if (= x (larger x y))
      (sum-of-squares x (larger y z ))
      (sum-of-squares y (larger x z ))
    )
