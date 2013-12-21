@@ -1,6 +1,5 @@
 ;;scip 1-16
 
-
 (define (sqr b n)
   (iter-square 1 b n))
 
