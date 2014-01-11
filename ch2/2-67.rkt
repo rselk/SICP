@@ -1,18 +1,39 @@
 #lang racket
 
-;; Exercise 2.67.  Define an encoding tree and a sample message
+;; Exercise 2.68.  The encode procedure takes as arguments a message
+;; and a tree and produces the list of bits that gives the encoded message.
 
-(define sample-tree
-  (make-code-tree (make-leaf `A 4)
-                  (make-code-tree
-                   (make-leaf `B 2)
-                   (make-code-tree (make-leaf `D 1)
-                                   (make-leaf `C 1)))))
 
-;; decode message
-(define sample-message `(0 1 1 0 0 1 0 1 0 1 1 1 0))                              
-(decode sample-message sample-tree)
-;; '(A D A B B C A)
+
+(define (encode-sym sym tree)
+  (cond ((not (memq sym (symbols tree))) (error "not in tree"))
+        ((leaf? tree) null)
+        ((memq sym (symbols (left-branch tree)))
+         (cons 0 (encode-sym sym (left-branch tree))))
+        ((memq sym (symbols (right-branch tree)))
+         (cons 0 (encode-sym sym (right-branch tree))))))
+        
+(define (encode message tree)
+  (if (null? message)
+      '()
+      (append (encode-sym (car message) tree)
+              (encode (cdr message) tree))))
+
+(define (decode bits tree)
+  (define (decode-1 bits current-branch)
+    (if (null? bits)
+        `()
+        (let ((next-branch
+               (choose-branch (car bits) current-branch)))
+          (if (leaf? next-branch)
+              (cons (symbol-leaf next-branch)
+                    (decode-1 (cdr bits) tree))
+              (decode-1 (cdr bits) next-branch)))))
+  (decode-1 bits tree))
+
+
+
+
 
 ;; huffman tree
 (define (make-leaf symbol weight)
@@ -49,17 +70,7 @@
       (weight-leaf tree)
       (cadddr tree)))
 
-(define (decode bits tree)
-  (define (decode-1 bits current-branch)
-    (if (null? bits)
-        `()
-        (let ((next-branch
-               (choose-branch (car bits) current-branch)))
-          (if (leaf? next-branch)
-              (cons (symbol-leaf next-branch)
-                    (decode-1 (cdr bits) tree))
-              (decode-1 (cdr bits) next-branch)))))
-  (decode-1 bits tree))
+
 
 (define (choose-branch bit branch)
   (cond ((= bit 0) (left-branch branch))
@@ -82,6 +93,17 @@
                     (make-leaf-set (cdr pairs))))))
 
 
+(define sample-tree
+  (make-code-tree (make-leaf `A 4)
+                  (make-code-tree
+                   (make-leaf `B 2)
+                   (make-code-tree (make-leaf `D 1)
+                                   (make-leaf `C 1)))))
+
+;; encode / decode message
+(define sample-message `(0 1 1 0 0 1 0 1 0 1 1 1 0))                              
+(decode sample-message sample-tree)
+(encode '(A D A B B C A) sample-tree)
 
 
 

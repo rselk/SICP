@@ -2,6 +2,7 @@
 (require math/number-theory) ;; prime
 
 ;; needed functions
+
 (define (accumulate op initial sequence) 
    (if (null? sequence) 
        initial 
@@ -31,17 +32,12 @@
                         (enumerate-interval 1 (- i 1))))
                  (enumerate-interval 1 n))))
 
-;;solution
-;; Once your realize you can solve this nesting
-;; flatmap functions the solution becomes much simpler. 
-
-(define (triples-fm n)
+(define (unique-pairs-flatmap n)
   (flatmap (lambda (i)
-         (flatmap (lambda (j)
-                  (map (lambda (k) (list i j k))
+                  (map (lambda (j) (list i j))
                        (enumerate-interval 1 (- i 1))))
                 (enumerate-interval 1 n)))
-           (enumerate-interval 1 n)))
 
 ;; tests
-(triples 3)
+(unique-pairs 6)
+(unique-pairs-flatmap 6)
